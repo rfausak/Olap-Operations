@@ -71,15 +71,16 @@ $i = 0;
 
 echo <<<HTML
 <center><form action="result.php" target="myframe" method="POST">
+<select name="productbox" id="productbox">
+<option value=""></option>
+$productOptions
+</select>
+
 <select name="timebox" id="timebox">
 <option value=""></option>
 $timeOptions
 </select>
 
-<select name="productbox" id="productbox">
-<option value=""></option>
-$productOptions
-</select>
 
 <select name="storebox" id="storebox">
 <option value=""></option>
