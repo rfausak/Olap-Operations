@@ -1,7 +1,9 @@
 <?php
 include 'connection.php';
-
-//Dynamic time creation
+/* 
+   Dynamic dropdown menu content generation (dimensions/attributes)
+   Copyright (c) 2014 Andrew R Fausak.  All Rights Reserved.
+*/
 $result1 = mysql_query("show columns from time") or die (mysql_error());
 $timeOptions = "";
 if (mysql_num_rows($result1) > 0) {
