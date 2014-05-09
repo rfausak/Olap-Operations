@@ -260,6 +260,6 @@ background-color: #CEE3F6;
 	width:200px;
 }
 </style>
-<?php echo $myPage ?>
+<?php if(isset($myPage))echo $myPage; ?>
 </body>
 </html>
