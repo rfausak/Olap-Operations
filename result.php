@@ -153,14 +153,12 @@ for($i = 0; $i < sizeof($sliceDiceTable); $i++) {
 	if(sizeof($myTables) > 0 || $i > 0) {
 	$myString .= ' AND ';
 	}
-	if($myTables[$i] == 'sales_fact') {
-
-	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = ' . floatval($sliceDiceQuery[$i]) . '';
+	if(strpos($myString, '.')) {
+	$myString .= 'ABS('.$sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. '-' . $sliceDiceQuery[$i] . ') < .01';
 	}
 	else
 	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = "' . $sliceDiceQuery[$i] . '"';
 }
-
 $myString .= ' GROUP BY ';
 for ($i = 0; $i < sizeof($myTables); $i++) {
 
