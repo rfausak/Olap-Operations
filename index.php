@@ -72,34 +72,49 @@ $i = 0;
 
 
 echo <<<HTML
+<center><h1>Welcome to Grocery's OLAP</h1></center>
 <center><form action="result.php" target="myframe" method="POST">
-<select name="productbox" id="productbox">
+<dl>
+<dt><label for="productbox">Product</label></dt>
+<dd><select name="productbox" id="productbox">
 <option value=""></option>
 $productOptions
-</select>
+</select></dd>
+</dl>
 
-<select name="timebox" id="timebox">
+<dl>
+<dt><label for="timebox">Time</label></dt>
+<dd><select name="timebox" id="timebox">
 <option value=""></option>
 $timeOptions
-</select>
+</select></dd>
+</dl>
 
-
-<select name="storebox" id="storebox">
+<dl>
+<dt><label for="storebox">Store</label></dt>
+<dd><select name="storebox" id="storebox">
 <option value=""></option>
 $storeOptions
-</select>
+</select></dd>
+</dl>
 
-<select name="promotionbox" id="promotionbox">
+<dl>
+<dt><label for="promotionbox">Promotion</label></dt>
+<dd><select name="promotionbox" id="promotionbox">
 <option value=""></option>
 $promoOptions
-</select>
+</select></dd>
+</dl>
 
-<select name="salesfactbox" id="salesfactbox">
+<dl>
+<dt><label for="salesfactbox">Sales Fact</label></dt>
+<dd><select name="salesfactbox" id="salesfactbox">
 <option value=""></option>
 $salesOptions
-</select>
+</select></dd>
+</dl>
 
-<input name="submitbutton" type="submit" value="submit" />
+<input name="submitbutton" type="submit" value="submit" id="b1"/>
 </form>
 </center>
 HTML;
@@ -108,3 +123,14 @@ HTML;
 <iframe name="myframe" src="result.php" width="100%" height="100%">
 	
 </iframe>
+
+
+<style>
+dl {
+	display: inline-block;
+}
+label {
+	font-weight:bold;
+	font-size: 20px;
+}
+</style>

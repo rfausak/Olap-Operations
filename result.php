@@ -204,27 +204,62 @@ console.log(myArray);
 	}
 	</script>
 HTML;
-echo $myScript;
-echo '<button id="coolButton" onclick="javascript:openAllUrlsInArray();">SliceDice</button>';
-               echo "<table border='1'>";
-                        echo "<tr>"; //create headers
+$myPage = "";
+$myPage .= $myScript;
+$myPage .= '<center><button id="coolButton" onclick="javascript:openAllUrlsInArray();"></button></center>';
+
+               $myPage .= "<table border='1'>";
+                        $myPage .= "<tr>"; //create headers
 			for($i = 0; $i < sizeof($myTables); $i++) {
-			echo "<td><b>" . $myQuery1[$i]. "</b></td>";
+			$myPage .= "<th>" . $myQuery1[$i]. "</th>";
 			}
-                        echo "</tr>";
+                        $myPage .= "</tr>";
                 //fetch tha data from the database
                 while($row = mysql_fetch_array($result)){
-                        echo "<tr>";
+                        $myPage .= "<tr>";
 			for($i = 0; $i < sizeof($myTables); $i++) {
 			$currString = $myGetReqs . $myTables[$i].'='.urlencode($row[$myQuery1[$i]]);
 $myString3 = <<<HTML
 '$currString'
 HTML;
 $myString2 = '"addToArray('.$myString3.');"';
-			echo "<td> <a href='#' onclick=$myString2>" . $row[$myQuery1[$i]]. "</a></td>";
+			$myPage .= "<td> <a href='#' onclick=$myString2>" . $row[$myQuery1[$i]]. "</a></td>";
 			}
-                        echo "</tr>";
+                        $myPage .= "</tr>";
                 }
-                echo "</table>";
+                $myPage .= "</table>";
 }
 ?>
+
+<html>
+<body>
+<style>
+table {
+margin: 0 auto;
+}
+th {
+height: 70px;
+width: 200px;
+font-size: 40px;
+background-color: #585858;
+color: white;
+} 
+td {
+font-size: 20px;
+background-color: #F2F2F2;
+}
+body {
+background-color: #CEE3F6;
+}
+#coolbutton {
+	background: url('sd.png') no-repeat scroll 0 0 transparent;
+	border:medium none;
+	height:32px;
+	margin:0;
+	padding:0;
+	width:200px;
+}
+</style>
+<?php echo $myPage ?>
+</body>
+</html>
