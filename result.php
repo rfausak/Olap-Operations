@@ -1,37 +1,116 @@
-
+<?php
+session_start();
+?>
 <?php
 include 'connection.php';
 /*
-   Dynamically Add/Remove Dimensions, rollup/drilldown
+   Dynamically Add/Remove Dimensions, rollup/drilldown, slice/dice
    Copyright (c) 2014 Andrew R Fausak.  All Rights Reserved.
 */
 
-if($_POST){
 $myQuery1 = Array();
 $myTables = Array();
 $hasSalesFact = false;
+$sliceDiceQuery = Array();
+$sliceDiceTable = Array();
+$sliceDiceField = Array();
+if($_POST) {
+$_SESSION['productbox'] = null;
+$_SESSION['timebox'] = null;
+$_SESSION['storebox'] = null;
+$_SESSION['promotionbox'] = null;
+$_SESSION['salesfactbox'] = null;
 		if($_POST['productbox'] != '') {
 		array_push($myQuery1, $_POST['productbox']);
 		array_push($myTables, 'product');
+		$_SESSION['productbox'] = $_POST['productbox'];
 		}
 		if($_POST['timebox'] != '') {
 		array_push($myQuery1, $_POST['timebox']);
 		array_push($myTables, 'time');
+		$_SESSION['timebox'] = $_POST['timebox'];
 		}
 		if($_POST['storebox'] != '') {
 		array_push($myQuery1, $_POST['storebox']);
 		array_push($myTables, 'store');
+		$_SESSION['storebox'] = $_POST['storebox'];
 		}
 		if($_POST['promotionbox'] != '') {
 		array_push($myQuery1, $_POST['promotionbox']);
 		array_push($myTables, 'promotion');
+		$_SESSION['promotionbox'] = $_POST['promotionbox'];
 		}
 		if($_POST['salesfactbox'] != '') {
 		array_push($myQuery1, $_POST['salesfactbox']);
 		array_push($myTables, 'sales_fact');
 		$hasSalesFact = true; 
+		$_SESSION['salesfactbox'] = $_POST['salesfactbox'];
 		}
+}
+else {
+	$hasGet = false;
+	if(isset($_GET['product'])) {
+	array_push($sliceDiceQuery, $_GET['product']);
+	array_push($sliceDiceTable, 'product');
+	array_push($sliceDiceField, $_SESSION['productbox']); 
+	$hasGet = true;
+	}
+	if(isset($_GET['time'])) {
+	array_push($sliceDiceQuery, $_GET['time']);
+	array_push($sliceDiceTable, 'time');
+	array_push($sliceDiceField, $_SESSION['timebox']); 
+	$hasGet = true;
+	}
+	if(isset($_GET['store'])) {
+	array_push($sliceDiceQuery, $_GET['store']);
+	array_push($sliceDiceTable, 'store');
+	array_push($sliceDiceField, $_SESSION['storebox']); 
+	$hasGet = true;
+	}
+	if(isset($_GET['promotion'])) {
+	array_push($sliceDiceQuery, $_GET['promotion']);
+	array_push($sliceDiceTable, 'promotion');
+	array_push($sliceDiceField, $_SESSION['promotionbox']); 
+	$hasGet = true;
+	}
+	if(isset($_GET['sales_fact'])) {
+	array_push($sliceDiceQuery, $_GET['sales_fact']);
+	array_push($sliceDiceTable, 'sales_fact');
+	array_push($sliceDiceField, $_SESSION['salesfactbox']); 
+	$hasGet = true;
+	}
+if($hasGet) {
+		if(isset($_SESSION['productbox'])){
+                array_push($myQuery1, $_SESSION['productbox']);
+                array_push($myTables, 'product');
+		}
+		if(isset($_SESSION['timebox'])){
+		array_push($myQuery1, $_SESSION['timebox']);
+		array_push($myTables, 'time');
+		}
+		if(isset($_SESSION['storebox'])){
+		array_push($myQuery1, $_SESSION['storebox']);
+		array_push($myTables, 'store');
+		}
+		if(isset($_SESSION['promotionbox'])){
+		array_push($myQuery1, $_SESSION['promotionbox']);
+		array_push($myTables, 'promotion');
+		}
+		if(isset($_SESSION['salesfactbox'])){
+		array_push($myQuery1, $_SESSION['salesfactbox']);
+		array_push($myTables, 'sales_fact');
+		$hasSalesFact = true; 
+		}
+}
+}
+if(sizeof($myTables) > 0) {
 $myString = 'SELECT ';
+$m = 0;
+while($myQuery1[$m] == null)
+{
+array_shift($myQuery1);
+array_shift($myTables);
+}
 for ($i = 0; $i < sizeof($myTables); $i++) {
 	if($i == 0) {
 	$myString .= $myQuery1[$i];
@@ -68,6 +147,20 @@ for ($i = 0; $i < sizeof($myTables); $i++) {
 		$myString .= $myTables[$i].'.'.$myTables[$i] . '_key = sales_fact.'.$myTables[$i].'_key';	
 	}
 }
+//slicedice
+
+for($i = 0; $i < sizeof($sliceDiceTable); $i++) {
+	if(sizeof($myTables) > 0 || $i > 0) {
+	$myString .= ' AND ';
+	}
+	if($myTables[$i] == 'sales_fact') {
+
+	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = ' . floatval($sliceDiceQuery[$i]) . '';
+	}
+	else
+	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = "' . $sliceDiceQuery[$i] . '"';
+}
+
 $myString .= ' GROUP BY ';
 for ($i = 0; $i < sizeof($myTables); $i++) {
 
@@ -81,9 +174,38 @@ for ($i = 0; $i < sizeof($myTables); $i++) {
         }
 }
 }
+//slicedicequery
+$myGetReqs = "";
+for($i = 0; $i < sizeof($sliceDiceTable); $i++) {
+if($i > 0)
+$myGetReqs .= '&';
 
+$myGetReqs .= '' . $sliceDiceTable[$i] . '=' . urlencode($sliceDiceQuery[$i]);
+}
+if(sizeof($sliceDiceTable) > 0){
+$myGetReqs .= '&';
+}
 $result = mysql_query($myString) or die (mysql_error());
-
+$myScript = <<<HTML
+	<script type="text/javascript">
+	var myArray = [];
+	function addToArray(stringToAdd) {
+	myArray.push(stringToAdd);
+console.log(myArray);
+	}
+	function openAllUrlsInArray() {
+	var myString = "result.php?";
+	for(var i = 0; i < myArray.length; i++) {
+	if(i > 0)
+	myString += '\&';
+	myString += myArray[i];
+	}
+	window.location.href = myString; 
+	}
+	</script>
+HTML;
+echo $myScript;
+echo '<button id="coolButton" onclick="javascript:openAllUrlsInArray();">SliceDice</button>';
                echo "<table border='1'>";
                         echo "<tr>"; //create headers
 			for($i = 0; $i < sizeof($myTables); $i++) {
@@ -94,7 +216,12 @@ $result = mysql_query($myString) or die (mysql_error());
                 while($row = mysql_fetch_array($result)){
                         echo "<tr>";
 			for($i = 0; $i < sizeof($myTables); $i++) {
-			echo "<td>" . $row[$myQuery1[$i]]. "</td>";
+			$currString = $myGetReqs . $myTables[$i].'='.urlencode($row[$myQuery1[$i]]);
+$myString3 = <<<HTML
+'$currString'
+HTML;
+$myString2 = '"addToArray('.$myString3.');"';
+			echo "<td> <a href='#' onclick=$myString2>" . $row[$myQuery1[$i]]. "</a></td>";
 			}
                         echo "</tr>";
                 }
