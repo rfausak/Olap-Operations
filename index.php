@@ -72,6 +72,7 @@ $i = 0;
 
 
 echo <<<HTML
+<title>Grocery's OLAP</title>
 <center><h1>Welcome to Grocery's OLAP</h1></center>
 <center><form action="result.php" target="myframe" method="POST">
 <dl>
@@ -120,7 +121,7 @@ $salesOptions
 HTML;
 ?>
 
-<iframe name="myframe" src="result.php" width="100%" height="100%">
+<iframe name="myframe" src="result.php" width="100%" height="100%" frameborder="0">
 	
 </iframe>
 
@@ -132,5 +133,8 @@ dl {
 label {
 	font-weight:bold;
 	font-size: 20px;
+}
+h1, label {
+	font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 </style>

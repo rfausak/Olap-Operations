@@ -153,14 +153,12 @@ for($i = 0; $i < sizeof($sliceDiceTable); $i++) {
 	if(sizeof($myTables) > 0 || $i > 0) {
 	$myString .= ' AND ';
 	}
-	if($myTables[$i] == 'sales_fact') {
-
-	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = ' . floatval($sliceDiceQuery[$i]) . '';
-	}
-	else
-	$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = "' . $sliceDiceQuery[$i] . '"';
+		if(strpos($sliceDiceQuery[$i], '.') !== false) {
+		$myString .= 'ABS('.$sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. '-' . $sliceDiceQuery[$i] . ') < .01';
+		}
+		else
+		$myString .= $sliceDiceTable[$i] .'.'.$sliceDiceField[$i]. ' = "' . $sliceDiceQuery[$i] . '"';
 }
-
 $myString .= ' GROUP BY ';
 for ($i = 0; $i < sizeof($myTables); $i++) {
 
@@ -204,29 +202,30 @@ console.log(myArray);
 	}
 	</script>
 HTML;
-echo $myScript;
-echo '<center><button id="coolButton" onclick="javascript:openAllUrlsInArray();"></button></center>';
+$myPage = "";
+$myPage .= $myScript;
+$myPage .= '<center><button id="coolButton" onclick="javascript:openAllUrlsInArray();"></button></center>';
 
-               echo "<table border='1'>";
-                        echo "<tr>"; //create headers
+               $myPage .= "<table border='1'>";
+                        $myPage .= "<tr>"; //create headers
 			for($i = 0; $i < sizeof($myTables); $i++) {
-			echo "<th>" . $myQuery1[$i]. "</th>";
+			$myPage .= "<th>" . $myQuery1[$i]. "</th>";
 			}
-                        echo "</tr>";
+                        $myPage .= "</tr>";
                 //fetch tha data from the database
                 while($row = mysql_fetch_array($result)){
-                        echo "<tr>";
+                        $myPage .= "<tr>";
 			for($i = 0; $i < sizeof($myTables); $i++) {
 			$currString = $myGetReqs . $myTables[$i].'='.urlencode($row[$myQuery1[$i]]);
 $myString3 = <<<HTML
 '$currString'
 HTML;
 $myString2 = '"addToArray('.$myString3.');"';
-			echo "<td> <a href='#' onclick=$myString2>" . $row[$myQuery1[$i]]. "</a></td>";
+			$myPage .= "<td> <a href='#' onclick=$myString2>" . $row[$myQuery1[$i]]. "</a></td>";
 			}
-                        echo "</tr>";
+                        $myPage .= "</tr>";
                 }
-                echo "</table>";
+                $myPage .= "</table>";
 }
 ?>
 
@@ -259,5 +258,6 @@ background-color: #CEE3F6;
 	width:200px;
 }
 </style>
+<?php if(isset($myPage))echo $myPage; ?>
 </body>
 </html>
